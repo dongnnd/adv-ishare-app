@@ -31,6 +31,9 @@ use std::{
 
 pub type SessionID = uuid::Uuid;
 
+#[allow(non_camel_case_types)]
+pub type Dart_Handle = usize;
+
 lazy_static::lazy_static! {
     static ref TEXTURE_RENDER_KEY: Arc<AtomicI32> = Arc::new(AtomicI32::new(0));
 }

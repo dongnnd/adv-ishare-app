@@ -46,6 +46,14 @@ fn link_vcpkg(mut path: PathBuf, name: &str) -> PathBuf {
         } else {
             format!("{}-{}", target_arch, target_os)
         }
+    } else if target_os == "ios" {
+        if target_arch == "x64" {
+            "x64-ios".to_owned()
+        } else if target_arch == "arm64" {
+            "arm64-ios".to_owned()
+        } else {
+            format!("{}-{}", target_arch, target_os)
+        }
     } else if target_os == "windows" {
         "x64-windows-static".to_owned()
     } else {
@@ -169,6 +177,17 @@ fn generate_bindings(
     for dir in include_paths {
         b = b.clang_arg(format!("-I{}", dir.display()));
     }
+    
+    // Thêm cờ -isysroot cho iOS
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("ios") {
+        let sdk_path = std::process::Command::new("xcrun")
+            .args(["--sdk", "iphoneos", "--show-sdk-path"])
+            .output()
+            .expect("Failed to get iOS SDK path");
+        let sdk_path = String::from_utf8(sdk_path.stdout).unwrap();
+        let sdk_path = sdk_path.trim();
+        b = b.clang_arg(format!("-isysroot{}", sdk_path));
+    }
 
     b.generate().unwrap().write_to_file(ffi_rs).unwrap();
     fs::copy(ffi_rs, exact_file).ok(); // ignore failure
@@ -238,6 +257,30 @@ fn ffmpeg() {
 }
 */
 
+// Add cc-rs configuration for iOS
+fn configure_cc_for_ios() {
+    let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap();
+    if target_os == "ios" {
+        let sdk_path = std::process::Command::new("xcrun")
+            .args(["--sdk", "iphoneos", "--show-sdk-path"])
+            .output()
+            .expect("Failed to get iOS SDK path");
+        let sdk_path = String::from_utf8(sdk_path.stdout).unwrap();
+        let sdk_path = sdk_path.trim();
+        
+        // Set environment variables for cc-rs
+        std::env::set_var("CC", "clang");
+        std::env::set_var("AR", "ar");
+        std::env::set_var("CFLAGS", &format!("-isysroot {}", sdk_path));
+        std::env::set_var("SDKROOT", sdk_path);
+        
+        // Also set target-specific variables
+        std::env::set_var("CC_aarch64_apple_ios", "clang");
+        std::env::set_var("AR_aarch64_apple_ios", "ar");
+        std::env::set_var("CFLAGS_aarch64_apple_ios", &format!("-isysroot {}", sdk_path));
+    }
+}
+
 fn main() {
     // note: all link symbol names in x86 (32-bit) are prefixed wth "_".
     // run "rustup show" to show current default toolchain, if it is stable-x86-pc-windows-msvc,
@@ -250,16 +293,31 @@ fn main() {
     env::remove_var("CARGO_CFG_TARGET_FEATURE");
     env::set_var("CARGO_CFG_TARGET_FEATURE", "crt-static");
 
+    // Configure cc-rs for iOS target
+    configure_cc_for_ios();
+
     find_package("libyuv");
     gen_vcpkg_package("libvpx", "vpx_ffi.h", "vpx_ffi.rs", "^[vV].*");
     gen_vcpkg_package("aom", "aom_ffi.h", "aom_ffi.rs", "^(aom|AOM|OBU|AV1).*");
     gen_vcpkg_package("libyuv", "yuv_ffi.h", "yuv_ffi.rs", ".*");
     // ffmpeg();
-
-    // there is problem with cfg(target_os) in build.rs, so use our workaround
     let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap();
     if target_os == "ios" {
-        // nothing
+        let ffmpeg_root = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+        let ffmpeg_root = std::path::Path::new(&ffmpeg_root).join("../../third_party/ffmpeg-ios-arm64");
+        let ffmpeg_include = ffmpeg_root.join("include");
+        let ffmpeg_lib = ffmpeg_root.join("lib");
+        println!("cargo:rustc-link-search=native={}", ffmpeg_lib.display());
+        for lib in &["avcodec", "avformat", "avutil", "swscale", "swresample"] {
+            println!("cargo:rustc-link-lib=static={}", lib);
+        }
+        println!("cargo:include={}", ffmpeg_include.display());
+        // Các framework cần thiết cho iOS
+        println!("cargo:rustc-link-lib=framework=CoreFoundation");
+        println!("cargo:rustc-link-lib=framework=CoreVideo");
+        println!("cargo:rustc-link-lib=framework=CoreMedia");
+        println!("cargo:rustc-link-lib=framework=VideoToolbox");
+        println!("cargo:rustc-link-lib=framework=AVFoundation");
     } else if target_os == "android" {
         println!("cargo:rustc-cfg=android");
     } else if cfg!(windows) {

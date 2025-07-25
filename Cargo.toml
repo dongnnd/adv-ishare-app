@@ -40,7 +40,6 @@ unix-file-copy-paste = [
     "dep:once_cell",
     "clipboard/unix-file-copy-paste",
 ]
-screencapturekit = ["cpal/screencapturekit"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -86,6 +85,7 @@ kcp-sys= { git = "https://github.com/rustdesk-org/kcp-sys"}
 [target.'cfg(not(target_os = "linux"))'.dependencies]
 # https://github.com/rustdesk/rustdesk/discussions/10197, not use cpal on linux
 cpal = { git = "https://github.com/rustdesk-org/cpal", branch = "osx-screencapturekit" }
+coreaudio-sys = "=0.2.15"
 ringbuf = "0.3"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
