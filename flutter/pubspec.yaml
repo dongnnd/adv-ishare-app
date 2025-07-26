@@ -109,6 +109,7 @@ dependencies:
   xterm: 4.0.0
   sqflite: 2.2.0
   google_fonts: ^6.2.1
+  flutter_native_splash:
 
 dev_dependencies:
   icons_launcher: ^2.0.4
@@ -137,6 +138,21 @@ flutter_icons:
   linux: true
   web:
     generate: true
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/splash.png
+  android_12:
+    image: assets/splash.png
+    icon_background_color: "#ffffff"
+    image_dark: assets/splash.png
+    icon_background_color_dark: "#ffffff"
+  android: true
+  ios: true
+  web: false
+  fullscreen: true
+  android_gravity: center
+  ios_content_mode: center
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
