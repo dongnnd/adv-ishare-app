@@ -669,60 +669,60 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                 onPressed: (context) {
                   showServerSettings(gFFI.dialogManager);
                 }),
-          if (!isIOS && !_hideNetwork && !_hideProxy)
-            SettingsTile(
-                title: Text(translate('Socks5/Http(s) Proxy')),
-                leading: Icon(Icons.network_ping),
-                onPressed: (context) {
-                  changeSocks5Proxy();
-                }),
-          if (!disabledSettings && !_hideNetwork && !_hideWebSocket)
-            SettingsTile.switchTile(
-              title: Text(translate('Use WebSocket')),
-              initialValue: _allowWebSocket,
-              onToggle: isOptionFixed(kOptionAllowWebSocket)
-                  ? null
-                  : (v) async {
-                      await mainSetBoolOption(kOptionAllowWebSocket, v);
-                      final newValue =
-                          await mainGetBoolOption(kOptionAllowWebSocket);
-                      setState(() {
-                        _allowWebSocket = newValue;
-                      });
-                    },
-            ),
-          if (!incomingOnly)
-            SettingsTile.switchTile(
-              title: Text(translate('Enable UDP hole punching')),
-              initialValue: _enableUdpPunch,
-              onToggle: (v) async {
-                await mainSetLocalBoolOption(kOptionEnableUdpPunch, v);
-                final newValue =
-                    mainGetLocalBoolOptionSync(kOptionEnableUdpPunch);
-                setState(() {
-                  _enableUdpPunch = newValue;
-                });
-              },
-            ),
-          if (!incomingOnly)
-            SettingsTile.switchTile(
-              title: Text(translate('Enable IPv6 P2P connection')),
-              initialValue: _enableIpv6Punch,
-              onToggle: (v) async {
-                await mainSetLocalBoolOption(kOptionEnableIpv6Punch, v);
-                final newValue =
-                    mainGetLocalBoolOptionSync(kOptionEnableIpv6Punch);
-                setState(() {
-                  _enableIpv6Punch = newValue;
-                });
-              },
-            ),
-          SettingsTile(
-              title: Text(translate('Language')),
-              leading: Icon(Icons.translate),
-              onPressed: (context) {
-                showLanguageSettings(gFFI.dialogManager);
-              }),
+          // if (!isIOS && !_hideNetwork && !_hideProxy)
+          //   SettingsTile(
+          //       title: Text(translate('Socks5/Http(s) Proxy')),
+          //       leading: Icon(Icons.network_ping),
+          //       onPressed: (context) {
+          //         changeSocks5Proxy();
+          //       }),
+          // if (!disabledSettings && !_hideNetwork && !_hideWebSocket)
+          //   SettingsTile.switchTile(
+          //     title: Text(translate('Use WebSocket')),
+          //     initialValue: _allowWebSocket,
+          //     onToggle: isOptionFixed(kOptionAllowWebSocket)
+          //         ? null
+          //         : (v) async {
+          //             await mainSetBoolOption(kOptionAllowWebSocket, v);
+          //             final newValue =
+          //                 await mainGetBoolOption(kOptionAllowWebSocket);
+          //             setState(() {
+          //               _allowWebSocket = newValue;
+          //             });
+          //           },
+          //   ),
+          // if (!incomingOnly)
+          //   SettingsTile.switchTile(
+          //     title: Text(translate('Enable UDP hole punching')),
+          //     initialValue: _enableUdpPunch,
+          //     onToggle: (v) async {
+          //       await mainSetLocalBoolOption(kOptionEnableUdpPunch, v);
+          //       final newValue =
+          //           mainGetLocalBoolOptionSync(kOptionEnableUdpPunch);
+          //       setState(() {
+          //         _enableUdpPunch = newValue;
+          //       });
+          //     },
+          //   ),
+          // if (!incomingOnly)
+          //   SettingsTile.switchTile(
+          //     title: Text(translate('Enable IPv6 P2P connection')),
+          //     initialValue: _enableIpv6Punch,
+          //     onToggle: (v) async {
+          //       await mainSetLocalBoolOption(kOptionEnableIpv6Punch, v);
+          //       final newValue =
+          //           mainGetLocalBoolOptionSync(kOptionEnableIpv6Punch);
+          //       setState(() {
+          //         _enableIpv6Punch = newValue;
+          //       });
+          //     },
+          //   ),
+          // SettingsTile(
+          //     title: Text(translate('Language')),
+          //     leading: Icon(Icons.translate),
+          //     onPressed: (context) {
+          //       showLanguageSettings(gFFI.dialogManager);
+          //     }),
           SettingsTile(
             title: Text(translate(
                 Theme.of(context).brightness == Brightness.light
@@ -736,97 +736,97 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             },
           )
         ]),
-        if (isAndroid)
-          SettingsSection(title: Text(translate('Hardware Codec')), tiles: [
-            SettingsTile.switchTile(
-              title: Text(translate('Enable hardware codec')),
-              initialValue: _enableHardwareCodec,
-              onToggle: isOptionFixed(kOptionEnableHwcodec)
-                  ? null
-                  : (v) async {
-                      await mainSetBoolOption(kOptionEnableHwcodec, v);
-                      final newValue =
-                          await mainGetBoolOption(kOptionEnableHwcodec);
-                      setState(() {
-                        _enableHardwareCodec = newValue;
-                      });
-                    },
-            ),
-          ]),
-        if (isAndroid)
-          SettingsSection(
-            title: Text(translate("Recording")),
-            tiles: [
-              if (!outgoingOnly)
-                SettingsTile.switchTile(
-                  title:
-                      Text(translate('Automatically record incoming sessions')),
-                  initialValue: _autoRecordIncomingSession,
-                  onToggle: isOptionFixed(kOptionAllowAutoRecordIncoming)
-                      ? null
-                      : (v) async {
-                          await bind.mainSetOption(
-                              key: kOptionAllowAutoRecordIncoming,
-                              value: bool2option(
-                                  kOptionAllowAutoRecordIncoming, v));
-                          final newValue = option2bool(
-                              kOptionAllowAutoRecordIncoming,
-                              await bind.mainGetOption(
-                                  key: kOptionAllowAutoRecordIncoming));
-                          setState(() {
-                            _autoRecordIncomingSession = newValue;
-                          });
-                        },
-                ),
-              if (!incomingOnly)
-                SettingsTile.switchTile(
-                  title:
-                      Text(translate('Automatically record outgoing sessions')),
-                  initialValue: _autoRecordOutgoingSession,
-                  onToggle: isOptionFixed(kOptionAllowAutoRecordOutgoing)
-                      ? null
-                      : (v) async {
-                          await bind.mainSetLocalOption(
-                              key: kOptionAllowAutoRecordOutgoing,
-                              value: bool2option(
-                                  kOptionAllowAutoRecordOutgoing, v));
-                          final newValue = option2bool(
-                              kOptionAllowAutoRecordOutgoing,
-                              bind.mainGetLocalOption(
-                                  key: kOptionAllowAutoRecordOutgoing));
-                          setState(() {
-                            _autoRecordOutgoingSession = newValue;
-                          });
-                        },
-                ),
-              SettingsTile(
-                title: Text(translate("Directory")),
-                description: Text(bind.mainVideoSaveDirectory(root: false)),
-              ),
-            ],
-          ),
-        if (isAndroid &&
-            !disabledSettings &&
-            !outgoingOnly &&
-            !hideSecuritySettings)
-          SettingsSection(title: Text('2FA'), tiles: tfaTiles),
-        if (isAndroid &&
-            !disabledSettings &&
-            !outgoingOnly &&
-            !hideSecuritySettings)
-          SettingsSection(
-            title: Text(translate("Share screen")),
-            tiles: shareScreenTiles,
-          ),
+        // if (isAndroid)
+        //   SettingsSection(title: Text(translate('Hardware Codec')), tiles: [
+        //     SettingsTile.switchTile(
+        //       title: Text(translate('Enable hardware codec')),
+        //       initialValue: _enableHardwareCodec,
+        //       onToggle: isOptionFixed(kOptionEnableHwcodec)
+        //           ? null
+        //           : (v) async {
+        //               await mainSetBoolOption(kOptionEnableHwcodec, v);
+        //               final newValue =
+        //                   await mainGetBoolOption(kOptionEnableHwcodec);
+        //               setState(() {
+        //                 _enableHardwareCodec = newValue;
+        //               });
+        //             },
+        //     ),
+        //   ]),
+        // if (isAndroid)
+        //   SettingsSection(
+        //     title: Text(translate("Recording")),
+        //     tiles: [
+        //       if (!outgoingOnly)
+        //         SettingsTile.switchTile(
+        //           title:
+        //               Text(translate('Automatically record incoming sessions')),
+        //           initialValue: _autoRecordIncomingSession,
+        //           onToggle: isOptionFixed(kOptionAllowAutoRecordIncoming)
+        //               ? null
+        //               : (v) async {
+        //                   await bind.mainSetOption(
+        //                       key: kOptionAllowAutoRecordIncoming,
+        //                       value: bool2option(
+        //                           kOptionAllowAutoRecordIncoming, v));
+        //                   final newValue = option2bool(
+        //                       kOptionAllowAutoRecordIncoming,
+        //                       await bind.mainGetOption(
+        //                           key: kOptionAllowAutoRecordIncoming));
+        //                   setState(() {
+        //                     _autoRecordIncomingSession = newValue;
+        //                   });
+        //                 },
+        //         ),
+        //       if (!incomingOnly)
+        //         SettingsTile.switchTile(
+        //           title:
+        //               Text(translate('Automatically record outgoing sessions')),
+        //           initialValue: _autoRecordOutgoingSession,
+        //           onToggle: isOptionFixed(kOptionAllowAutoRecordOutgoing)
+        //               ? null
+        //               : (v) async {
+        //                   await bind.mainSetLocalOption(
+        //                       key: kOptionAllowAutoRecordOutgoing,
+        //                       value: bool2option(
+        //                           kOptionAllowAutoRecordOutgoing, v));
+        //                   final newValue = option2bool(
+        //                       kOptionAllowAutoRecordOutgoing,
+        //                       bind.mainGetLocalOption(
+        //                           key: kOptionAllowAutoRecordOutgoing));
+        //                   setState(() {
+        //                     _autoRecordOutgoingSession = newValue;
+        //                   });
+        //                 },
+        //         ),
+        //       SettingsTile(
+        //         title: Text(translate("Directory")),
+        //         description: Text(bind.mainVideoSaveDirectory(root: false)),
+        //       ),
+        //     ],
+        //   ),
+        // if (isAndroid &&
+        //     !disabledSettings &&
+        //     !outgoingOnly &&
+        //     !hideSecuritySettings)
+        //   SettingsSection(title: Text('2FA'), tiles: tfaTiles),
+        // if (isAndroid &&
+        //     !disabledSettings &&
+        //     !outgoingOnly &&
+        //     !hideSecuritySettings)
+        //   SettingsSection(
+        //     title: Text(translate("Share screen")),
+        //     tiles: shareScreenTiles,
+        //   ),
         if (!bind.isIncomingOnly()) defaultDisplaySection(),
-        if (isAndroid &&
-            !disabledSettings &&
-            !outgoingOnly &&
-            !hideSecuritySettings)
-          SettingsSection(
-            title: Text(translate("Enhancements")),
-            tiles: enhancementsTiles,
-          ),
+        // if (isAndroid &&
+        //     !disabledSettings &&
+        //     !outgoingOnly &&
+        //     !hideSecuritySettings)
+        //   SettingsSection(
+        //     title: Text(translate("Enhancements")),
+        //     tiles: enhancementsTiles,
+        //   ),
         SettingsSection(
           title: Text(translate("About")),
           tiles: [
@@ -837,7 +837,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                 title: Text(translate("Version: ") + version),
                 value: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text('rustdesk.com',
+                  child: Text('IShareLed',
                       style: TextStyle(
                         decoration: TextDecoration.underline,
                       )),
@@ -850,15 +850,15 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                   child: Text(_buildDate),
                 ),
                 leading: Icon(Icons.query_builder)),
-            if (isAndroid)
-              SettingsTile(
-                  onPressed: (context) => onCopyFingerprint(_fingerprint),
-                  title: Text(translate("Fingerprint")),
-                  value: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text(_fingerprint),
-                  ),
-                  leading: Icon(Icons.fingerprint)),
+            // if (isAndroid)
+            //   SettingsTile(
+            //       onPressed: (context) => onCopyFingerprint(_fingerprint),
+            //       title: Text(translate("Fingerprint")),
+            //       value: Padding(
+            //         padding: EdgeInsets.symmetric(vertical: 8),
+            //         child: Text(_fingerprint),
+            //       ),
+            //       leading: Icon(Icons.fingerprint)),
             SettingsTile(
               title: Text(translate("Privacy Statement")),
               onPressed: (context) =>
