@@ -20,10 +20,7 @@
       "name": "libjpeg-turbo",
       "host": false
     },
-    {
-      "name": "oboe",
-      "platform": "android"
-    },
+
     {
       "name": "opus",
       "host": true
@@ -48,16 +45,7 @@
       "name": "libyuv",
       "host": false
     },
-    {
-      "name": "mfx-dispatch",
-      "host": true,
-      "platform": "((x86 | x64) & (android | linux)) | (windows & !uwp)"
-    },
-    {
-      "name": "mfx-dispatch",
-      "host": false,
-      "platform": "((x86 | x64) & (android | linux)) | (windows & !uwp)"
-    },
+
     {
       "name": "ffmpeg",
       "host": true,

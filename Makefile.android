@@ -1,0 +1,136 @@
+# RustDesk Android Library Build Makefile for macOS
+# Usage: make -f Makefile.android [target]
+
+.PHONY: help setup build-all build-aarch64 build-armv7 build-x86_64 clean check-env flutter-bridge
+
+# Default target
+all: build-all
+
+# Help target
+help:
+	@echo "🔧 RustDesk Android Library Builder"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  setup          - One-time environment setup"
+	@echo "  check-env      - Check if environment is properly configured"
+	@echo "  flutter-bridge - Generate Flutter-Rust bridge only"
+	@echo "  build-all      - Build libraries for all architectures"
+	@echo "  build-aarch64  - Build library for ARM64 (aarch64)"
+	@echo "  build-armv7    - Build library for ARMv7"
+	@echo "  build-x86_64   - Build library for x86_64"
+	@echo "  clean          - Clean build artifacts"
+	@echo "  clean-all      - Clean all artifacts and dependencies"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make -f Makefile.android setup"
+	@echo "  make -f Makefile.android build-aarch64"
+	@echo "  make -f Makefile.android build-all"
+
+# One-time setup
+setup:
+	@echo "🚀 Setting up Android build environment..."
+	@chmod +x setup_android_build_env.sh
+	@./setup_android_build_env.sh
+	@echo "✅ Setup completed!"
+
+# Check environment
+check-env:
+	@echo "🔍 Checking build environment..."
+	@echo "Checking Rust..."
+	@rustc --version || (echo "❌ Rust not found" && exit 1)
+	@echo "Checking cargo-ndk..."
+	@cargo-ndk --version || (echo "❌ cargo-ndk not found" && exit 1)
+	@echo "Checking Flutter..."
+	@flutter --version || (echo "❌ Flutter not found" && exit 1)
+	@echo "Checking vcpkg..."
+	@test -d "$(HOME)/vcpkg" || (echo "❌ vcpkg not found at $(HOME)/vcpkg" && exit 1)
+	@echo "Checking Android NDK..."
+	@test -d "$(HOME)/Library/Android/sdk/ndk/r27c" || (echo "❌ Android NDK r27c not found" && exit 1)
+	@echo "✅ Environment check passed!"
+
+# Generate Flutter-Rust bridge only
+flutter-bridge:
+	@echo "🌉 Generating Flutter-Rust bridge..."
+	@source android_build_config.sh && \
+	cd flutter && \
+	sed -i '' 's/extended_text: 14.0.0/extended_text: 13.0.0/g' pubspec.yaml 2>/dev/null || true && \
+	flutter pub get && \
+	cd .. && \
+	flutter_rust_bridge_codegen \
+		--rust-input ./src/flutter_ffi.rs \
+		--dart-output ./flutter/lib/generated_bridge.dart \
+		--c-output ./flutter/macos/Runner/bridge_generated.h && \
+	cp ./flutter/macos/Runner/bridge_generated.h ./flutter/ios/Runner/bridge_generated.h
+	@echo "✅ Bridge generation completed!"
+
+# Build all architectures
+build-all:
+	@echo "🏗️ Building libraries for all architectures..."
+	@chmod +x build_android_lib_local.sh
+	@./build_android_lib_local.sh all
+	@echo "✅ All builds completed!"
+
+# Build specific architectures
+build-aarch64:
+	@echo "🏗️ Building library for ARM64 (aarch64)..."
+	@chmod +x build_android_lib_local.sh
+	@./build_android_lib_local.sh aarch64
+	@echo "✅ ARM64 build completed!"
+
+build-armv7:
+	@echo "🏗️ Building library for ARMv7..."
+	@chmod +x build_android_lib_local.sh
+	@./build_android_lib_local.sh armv7
+	@echo "✅ ARMv7 build completed!"
+
+build-x86_64:
+	@echo "🏗️ Building library for x86_64..."
+	@chmod +x build_android_lib_local.sh
+	@./build_android_lib_local.sh x86_64
+	@echo "✅ x86_64 build completed!"
+
+# Clean targets
+clean:
+	@echo "🧹 Cleaning build artifacts..."
+	@rm -rf target/aarch64-linux-android target/armv7-linux-androideabi target/x86_64-linux-android target/i686-linux-android
+	@rm -rf android-libs
+	@echo "✅ Clean completed!"
+
+clean-all: clean
+	@echo "🧹 Cleaning all artifacts and dependencies..."
+	@rm -rf target
+	@cargo clean
+	@cd flutter && flutter clean && cd ..
+	@echo "✅ Deep clean completed!"
+
+# Quick development targets
+dev-setup: setup check-env
+	@echo "🚀 Development environment ready!"
+
+dev-build: flutter-bridge build-aarch64
+	@echo "🚀 Quick development build completed!"
+
+# Debug targets
+debug-env:
+	@echo "🐛 Environment Debug Information"
+	@echo "================================"
+	@echo "Current directory: $(shell pwd)"
+	@echo "Rust version: $(shell rustc --version 2>/dev/null || echo 'Not found')"
+	@echo "Cargo version: $(shell cargo --version 2>/dev/null || echo 'Not found')"
+	@echo "Flutter version: $(shell flutter --version 2>/dev/null | head -n1 || echo 'Not found')"
+	@echo "cargo-ndk: $(shell cargo-ndk --version 2>/dev/null || echo 'Not found')"
+	@echo "vcpkg: $(shell test -d "$(HOME)/vcpkg" && echo 'Found' || echo 'Not found')"
+	@echo "Android NDK: $(shell test -d "$(HOME)/Library/Android/sdk/ndk/r27c" && echo 'Found' || echo 'Not found')"
+	@echo "PATH: $(PATH)"
+
+# Show build output
+show-libs:
+	@echo "📚 Built Libraries:"
+	@ls -la android-libs/ 2>/dev/null || echo "No libraries found. Run 'make -f Makefile.android build-all' first."
+
+# Test individual steps
+test-bridge: flutter-bridge
+	@echo "🧪 Testing bridge generation..."
+	@test -f "src/bridge_generated.rs" || (echo "❌ Bridge Rust file not generated" && exit 1)
+	@test -f "flutter/lib/generated_bridge.dart" || (echo "❌ Bridge Dart file not generated" && exit 1)
+	@echo "✅ Bridge test passed!" 
