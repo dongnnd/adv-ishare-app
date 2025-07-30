@@ -351,7 +351,7 @@ class ScamWarningDialogState extends State<ScamWarningDialog> {
                 ),
                 SizedBox(height: 18),
                 Text(
-                  translate("scam_title"),
+                  'Bạn có thể đang bị LỪA ĐẢO!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -361,7 +361,7 @@ class ScamWarningDialogState extends State<ScamWarningDialog> {
                 ),
                 SizedBox(height: 18),
                 Text(
-                  "${translate("scam_text1")}\n\n${translate("scam_text2")}\n",
+                  "Nếu bạn đang nói chuyện điện thoại với người mà bạn KHÔNG quen biết VÀ TIN TƯỞNG, người đó yêu cầu bạn sử dụng Netcontrol Ishare và khởi động dịch vụ — đừng tiếp tục và hãy cúp máy ngay lập tức.\n\nHọ rất có thể là kẻ lừa đảo, cố gắng đánh cắp tiền hoặc thông tin cá nhân của bạn.\n",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -379,7 +379,7 @@ class ScamWarningDialogState extends State<ScamWarningDialog> {
                       },
                     ),
                     Text(
-                      translate("Don't show again"),
+                      "Không hiển thị lại",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -409,8 +409,8 @@ class ScamWarningDialogState extends State<ScamWarningDialog> {
                         ),
                         child: Text(
                           isButtonLocked
-                              ? "${translate("I Agree")} (${_countdown}s)"
-                              : translate("I Agree"),
+                              ? 'Đồng ý (${_countdown}s)'
+                              : 'Đồng ý',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13.0,
@@ -431,7 +431,7 @@ class ScamWarningDialogState extends State<ScamWarningDialog> {
                           backgroundColor: Colors.blueAccent,
                         ),
                         child: Text(
-                          translate("Decline"),
+                          'Từ chối',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13.0,

@@ -150,7 +150,7 @@ class HomePageState extends State<HomePage> {
         ],
       );
     }
-    return Text('IShareLed');
+    return Text('Netcontrol Ishare');
   }
 }
 
