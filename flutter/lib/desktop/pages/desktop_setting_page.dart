@@ -204,8 +204,8 @@ class _DesktopSettingPageState extends State<DesktopSettingPage>
               _TabInfo(tab, 'Account', Icons.person_outline, Icons.person));
           break;
         case SettingsTabKey.printer:
-          settingTabs
-              .add(_TabInfo(tab, 'Printer', Icons.print_outlined, Icons.print));
+          // settingTabs
+          //     .add(_TabInfo(tab, 'Printer', Icons.print_outlined, Icons.print));
           break;
         case SettingsTabKey.about:
           settingTabs
@@ -415,12 +415,12 @@ class _GeneralState extends State<_General> {
       children: [
         if (!isWeb) service(),
         theme(),
-        _Card(title: 'Language', children: [language()]),
+        //_Card(title: 'Language', children: [language()]),
         if (!isWeb) hwcodec(),
         if (!isWeb) audio(context),
-        if (!isWeb) record(context),
+        // if (!isWeb) record(context),
         if (!isWeb) WaylandCard(),
-        other()
+        //other()
       ],
     ).marginOnly(bottom: _kListViewBottomMargin);
   }
@@ -808,9 +808,9 @@ class _SafetyState extends State<_Safety> with AutomaticKeepAliveClientMixin {
               child: Column(children: [
                 permissions(context),
                 password(context),
-                _Card(title: '2FA', children: [tfa()]),
-                _Card(title: 'ID', children: [changeId()]),
-                more(context),
+                //_Card(title: '2FA', children: [tfa()]),
+                //_Card(title: 'ID', children: [changeId()]),
+                //more(context),
               ]),
             ),
           ],
@@ -1648,10 +1648,10 @@ class _DisplayState extends State<_Display> {
       viewStyle(context),
       scrollStyle(context),
       imageQuality(context),
-      codec(context),
+      // codec(context),
       if (isDesktop) trackpadSpeed(context),
       if (!isWeb) privacyModeImpl(context),
-      other(context),
+      // other(context),
     ]).marginOnly(bottom: _kListViewBottomMargin);
   }
 
@@ -2194,18 +2194,18 @@ class _AboutState extends State<_About> {
         'license': license,
         'version': version,
         'buildDate': buildDate,
-        'fingerprint': fingerprint
+        //'fingerprint': fingerprint
       };
     }(), hasData: (data) {
       final license = data['license'].toString();
       final version = data['version'].toString();
       final buildDate = data['buildDate'].toString();
-      final fingerprint = data['fingerprint'].toString();
+      //final fingerprint = data['fingerprint'].toString();
       const linkStyle = TextStyle(decoration: TextDecoration.underline);
       final scrollController = ScrollController();
       return SingleChildScrollView(
         controller: scrollController,
-        child: _Card(title: translate('About RustDesk'), children: [
+        child: _Card(title: 'Netcontrol Ishare', children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -2218,10 +2218,10 @@ class _AboutState extends State<_About> {
               SelectionArea(
                   child: Text('${translate('Build Date')}: $buildDate')
                       .marginSymmetric(vertical: 4.0)),
-              if (!isWeb)
-                SelectionArea(
-                    child: Text('${translate('Fingerprint')}: $fingerprint')
-                        .marginSymmetric(vertical: 4.0)),
+              // if (!isWeb)
+              //   SelectionArea(
+              //       child: Text('${translate('Fingerprint')}: $fingerprint')
+              //           .marginSymmetric(vertical: 4.0)),
               InkWell(
                   onTap: () {
                     launchUrlString('https://rustdesk.com/privacy.html');
@@ -2238,33 +2238,33 @@ class _AboutState extends State<_About> {
                     translate('Website'),
                     style: linkStyle,
                   ).marginSymmetric(vertical: 4.0)),
-              Container(
-                decoration: const BoxDecoration(color: Color(0xFF2c8cff)),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
-                child: SelectionArea(
-                    child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Copyright © ${DateTime.now().toString().substring(0, 4)} Purslane Ltd.\n$license',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            translate('Slogan_tip'),
-                            style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                )),
-              ).marginSymmetric(vertical: 4.0)
+              // Container(
+              //   decoration: const BoxDecoration(color: Color(0xFF2c8cff)),
+              //   padding:
+              //       const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
+              //   child: SelectionArea(
+              //       child: Row(
+              //     children: [
+              //       Expanded(
+              //         child: Column(
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             Text(
+              //               'Copyright © ${DateTime.now().toString().substring(0, 4)} Purslane Ltd.\n$license',
+              //               style: const TextStyle(color: Colors.white),
+              //             ),
+              //             Text(
+              //               translate('Slogan_tip'),
+              //               style: TextStyle(
+              //                   fontWeight: FontWeight.w800,
+              //                   color: Colors.white),
+              //             )
+              //           ],
+              //         ),
+              //       ),
+              //     ],
+              //   )),
+              // ).marginSymmetric(vertical: 4.0)
             ],
           ).marginOnly(left: _kContentHMargin)
         ]),

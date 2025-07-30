@@ -144,6 +144,7 @@ void runMainApp(bool startService) async {
     bind.pluginListReload();
   }
   await Future.wait([gFFI.abModel.loadCache(), gFFI.groupModel.loadCache()]);
+  await bind.mainSetLocalOption(key: kCommConfKeyLang, value: 'vi');
   gFFI.userModel.refreshCurrentUser();
   runApp(App());
 
@@ -493,9 +494,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         child: GetMaterialApp(
           navigatorKey: globalKey,
           debugShowCheckedModeBanner: false,
-          title: isWeb
-              ? '${bind.mainGetAppNameSync()} Web Client V2 (Preview)'
-              : bind.mainGetAppNameSync(),
+          title: 'Netcontrol Ishare',
           theme: MyTheme.lightTheme,
           darkTheme: MyTheme.darkTheme,
           themeMode: MyTheme.currentThemeMode(),

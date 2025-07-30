@@ -80,11 +80,11 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     final isOutgoingOnly = bind.isOutgoingOnly();
     final children = <Widget>[
       if (!isOutgoingOnly) buildPresetPasswordWarning(),
-      if (bind.isCustomClient())
-        Align(
-          alignment: Alignment.center,
-          child: loadPowered(context),
-        ),
+      // if (bind.isCustomClient())
+      //   Align(
+      //     alignment: Alignment.center,
+      //     child: loadPowered(context),
+      //   ),
       Align(
         alignment: Alignment.center,
         child: loadLogo(),
@@ -605,8 +605,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-                  Color.fromARGB(255, 226, 66, 188),
-                  Color.fromARGB(255, 244, 114, 124),
+                  Color.fromARGB(255, 0, 122, 255),
+                  Color.fromARGB(255, 40, 160, 255)
                 ],
               )),
               padding: EdgeInsets.all(20),

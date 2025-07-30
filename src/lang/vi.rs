@@ -145,7 +145,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Failed to make direct connection to remote desktop", "Không thể kết nối thẳng tới máy tính từ xa"),
         ("Set Password", "Cài đặt mật khẩu"),
         ("OS Password", "Mật khẩu hệ điều hành"),
-        ("install_tip", "Do UAC, RustDesk sẽ không thể hoạt động đúng cách là bên từ xa trong vài trường hợp. Để tránh UAC, hãy nhấn cái nút dưới đây để cài RustDesk vào hệ thống."),
+        ("install_tip", "Do UAC, Netcontrol Ishare không thể hoạt động đúng cách là bên từ xa trong vài trường hợp. Để tránh UAC, hãy nhấn cái nút dưới đây để cài Netcontrol Ishare vào hệ thống."),
         ("Click to upgrade", "Nhấn để nâng cấp"),
         ("Click to download", "Nhấn để tải xuống"),
         ("Click to update", "Nhấn để cập nhật"),

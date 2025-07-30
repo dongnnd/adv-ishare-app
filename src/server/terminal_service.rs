@@ -726,12 +726,12 @@ impl TerminalServiceProxy {
                 if service.sessions.len() > 1 {
                     // No need to include the current terminal in the list.
                     // Because the `persistent_sessions` is used to restore the other sessions.
-                    opened.persistent_sessions = service
-                        .sessions
-                        .keys()
-                        .filter(|&id| *id != open.terminal_id)
-                        .cloned()
-                        .collect();
+                    // opened.persistent_sessions = service
+                    //     .sessions
+                    //     .keys()
+                    //     .filter(|&id| *id != open.terminal_id)
+                    //     .cloned()
+                    //     .collect();
                 }
                 service.needs_session_sync = false;
             }
@@ -895,7 +895,7 @@ impl TerminalServiceProxy {
         opened.service_id = service.service_id.clone();
         if service.needs_session_sync {
             if !service.sessions.is_empty() {
-                opened.persistent_sessions = service.sessions.keys().cloned().collect();
+                // opened.persistent_sessions = service.sessions.keys().cloned().collect();
             }
             service.needs_session_sync = false;
         }

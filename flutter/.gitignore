@@ -57,3 +57,6 @@ macos/rustdesk.xcodeproj/project.xcworkspace/
 
 # FVM Version Cache
 .fvm/
+
+# FVM Version Cache
+.fvm/
