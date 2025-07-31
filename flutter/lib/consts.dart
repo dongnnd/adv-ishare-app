@@ -618,3 +618,5 @@ extension WindowsTargetExt on int {
 }
 
 const kCheckSoftwareUpdateFinish = 'check_software_update_finish';
+
+const kFixedServerConfig = "==Qfi0TUwknZSR2QSlDMQ9kTMdESytWc1c2UzklSHR2TQtWdotma0I1K0MDavVkUiojI5V2aiwiIl5Was52buYXZk1CauFmdus2clRGdzVncv8iOwRHdoJiOikGchJCLiUmbpxmbv5idlRWLo5WY25yazVGZ0NXdyJiOikXYsVmciwiIl5Was52buYXZk1CauFmdus2clRGdzVnciojI0N3boJye";

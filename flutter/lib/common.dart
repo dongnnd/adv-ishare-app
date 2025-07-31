@@ -1543,6 +1543,15 @@ Future<void> initGlobalFFI() async {
   debugPrint("_globalFFI init end");
   // after `put`, can also be globally found by Get.find<FFI>();
   Get.put<FFI>(_globalFFI, permanent: true);
+
+  // Setup fixed server configuration
+  try {
+    final serverConfig = ServerConfig.decode(kFixedServerConfig);
+    await setServerConfig(null, null, serverConfig);
+    debugPrint("Fixed server configuration applied successfully");
+  } catch (e) {
+    debugPrint("Failed to setup fixed server configuration: $e");
+  }
 }
 
 String translate(String name) {
