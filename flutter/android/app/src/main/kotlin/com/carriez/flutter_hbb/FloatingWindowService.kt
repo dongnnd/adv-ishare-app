@@ -92,7 +92,7 @@ class FloatingWindowService : Service(), View.OnTouchListener {
     private fun createView(windowManager: WindowManager) {
         floatingView = ImageView(this)
         viewCreated = true
-        originalDrawable = resources.getDrawable(R.drawable.floating_window, null)
+        originalDrawable = resources.getDrawable(R.mipmap.ic_launcher, null)
         if (customSvg.isNotEmpty()) {
             try {
                 val svg = SVG.getFromString(customSvg)
@@ -303,15 +303,15 @@ class FloatingWindowService : Service(), View.OnTouchListener {
      private fun showPopupMenu() {
          val popupMenu = PopupMenu(this, floatingView)
          val idShowRustDesk = 0
-         popupMenu.menu.add(0, idShowRustDesk, 0, translate("Show RustDesk"))
+         popupMenu.menu.add(0, idShowRustDesk, 0, "Hiển thị Netcontrol Ishare")
          // For host side, clipboard sync
          val idSyncClipboard = 1
          val isServiceSyncEnabled = (MainActivity.rdClipboardManager?.isCaptureStarted ?: false) && FFI.isServiceClipboardEnabled()
          if (isServiceSyncEnabled) {
-             popupMenu.menu.add(0, idSyncClipboard, 0, translate("Update client clipboard"))
+             popupMenu.menu.add(0, idSyncClipboard, 0, "Cập nhật clipboard")
          }
          val idStopService = 2
-         popupMenu.menu.add(0, idStopService, 0, translate("Stop service"))
+         popupMenu.menu.add(0, idStopService, 0, "Dừng dịch vụ")
          popupMenu.setOnMenuItemClickListener { menuItem ->
              when (menuItem.itemId) {
                  idShowRustDesk -> {
