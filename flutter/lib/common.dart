@@ -3530,7 +3530,7 @@ Widget loadPowered(BuildContext context) {
       child: Opacity(
           opacity: 0.5,
           child: Text(
-            translate("powered_by_me"),
+            'Cung cấp bởi Netcontrol IShare',
             overflow: TextOverflow.clip,
             style: Theme.of(context)
                 .textTheme
