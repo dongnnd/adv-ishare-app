@@ -1,6 +1,6 @@
 # RustDesk Android Libraries - Version 1.4.1
 
-Built on: Sun Jul 27 14:58:28 +07 2025
+Built on: Fri Aug  1 09:23:12 +07 2025
 Built on macOS: 15.0.1
 Rust version: rustc 1.75.0 (82e1608df 2023-12-21)
 NDK version: r27c
