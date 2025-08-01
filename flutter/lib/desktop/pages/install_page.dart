@@ -103,7 +103,7 @@ class _InstallPageBodyState extends State<_InstallPageBody>
     windowManager.close();
   }
 
-  InkWell Option(RxBool option, {String label = ''}) {
+  InkWell Option(RxBool option, {String label = '', bool shouldTranslate = true}) {
     return InkWell(
       // todo mouseCursor: "SystemMouseCursors.forbidden" or no cursor on btnEnabled == false
       borderRadius: BorderRadius.circular(6),
@@ -119,7 +119,7 @@ class _InstallPageBodyState extends State<_InstallPageBody>
             ).marginOnly(right: 8),
           ),
           Expanded(
-            child: Text(translate(label)),
+            child: Text(shouldTranslate ? translate(label) : label),
           ),
         ],
       ),
@@ -165,7 +165,7 @@ class _InstallPageBodyState extends State<_InstallPageBody>
                   .marginOnly(bottom: 7),
               Option(desktopicon, label: 'Create desktop icon')
                   .marginOnly(bottom: 7),
-              Option(printer, label: 'Install {$appName} Printer'),
+              Option(printer, label: 'Cài đặt máy in', shouldTranslate: false),
               Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(

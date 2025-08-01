@@ -2529,8 +2529,8 @@ pub fn main_get_common(key: String) -> String {
             let _version = key.replace("download-file-", "");
             #[cfg(target_os = "windows")]
             return match crate::platform::windows::is_msi_installed() {
-                Ok(true) => format!("rustdesk-{_version}-x86_64.msi"),
-                Ok(false) => format!("rustdesk-{_version}-x86_64.exe"),
+                Ok(true) => format!("{}-{_version}-x86_64.msi", crate::get_app_name().to_lowercase()),
+                Ok(false) => format!("{}-{_version}-x86_64.exe", crate::get_app_name().to_lowercase()),
                 Err(e) => {
                     log::error!("Failed to check if is msi: {}", e);
                     format!("error:update-failed-check-msi-tip")
@@ -2539,9 +2539,9 @@ pub fn main_get_common(key: String) -> String {
             #[cfg(target_os = "macos")]
             {
                 return if cfg!(target_arch = "x86_64") {
-                    format!("rustdesk-{_version}-x86_64.dmg")
+                    format!("{}-{_version}-x86_64.dmg", crate::get_app_name().to_lowercase())
                 } else if cfg!(target_arch = "aarch64") {
-                    format!("rustdesk-{_version}-aarch64.dmg")
+                    format!("{}-{_version}-aarch64.dmg", crate::get_app_name().to_lowercase())
                 } else {
                     "error:unsupported".to_owned()
                 };

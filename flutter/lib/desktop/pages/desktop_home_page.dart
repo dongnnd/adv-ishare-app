@@ -80,11 +80,11 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     final isOutgoingOnly = bind.isOutgoingOnly();
     final children = <Widget>[
       if (!isOutgoingOnly) buildPresetPasswordWarning(),
-      // if (bind.isCustomClient())
-      //   Align(
-      //     alignment: Alignment.center,
-      //     child: loadPowered(context),
-      //   ),
+      if (bind.isCustomClient())
+        Align(
+          alignment: Alignment.center,
+          child: loadPowered(context),
+        ),
       Align(
         alignment: Alignment.center,
         child: loadLogo(),

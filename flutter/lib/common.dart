@@ -2838,22 +2838,23 @@ int versionCmp(String v1, String v2) {
 }
 
 String getWindowName({WindowType? overrideType}) {
-  final name = bind.mainGetAppNameSync();
-  switch (overrideType ?? kWindowType) {
-    case WindowType.Main:
-      return name;
-    case WindowType.FileTransfer:
-      return "File Transfer - $name";
-    case WindowType.ViewCamera:
-      return "View Camera - $name";
-    case WindowType.PortForward:
-      return "Port Forward - $name";
-    case WindowType.RemoteDesktop:
-      return "Remote Desktop - $name";
-    default:
-      break;
-  }
-  return name;
+  return 'Netcontrol Ishare';
+  // final name = bind.mainGetAppNameSync();
+  // switch (overrideType ?? kWindowType) {
+  //   case WindowType.Main:
+  //     return name;
+  //   case WindowType.FileTransfer:
+  //     return "File Transfer - $name";
+  //   case WindowType.ViewCamera:
+  //     return "View Camera - $name";
+  //   case WindowType.PortForward:
+  //     return "Port Forward - $name";
+  //   case WindowType.RemoteDesktop:
+  //     return "Remote Desktop - $name";
+  //   default:
+  //     break;
+  // }
+  // return name;
 }
 
 String getWindowNameWithId(String id, {WindowType? overrideType}) {
