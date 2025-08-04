@@ -117,17 +117,6 @@ jobs:
           targets: ${{ matrix.job.target }}
           components: "rustfmt"
 
-      - uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: rustdesk-lib-cache-ios
-          key: ${{ matrix.job.target }}
-
-      - name: Restore bridge files
-        uses: actions/download-artifact@master
-        with:
-          name: bridge-artifact
-          path: ./
-
       - name: Build rustdesk lib
         run: |
           rustup target add ${{ matrix.job.target }}
