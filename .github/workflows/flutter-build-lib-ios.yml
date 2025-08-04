@@ -83,12 +83,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Restore bridge files
-        uses: actions/download-artifact@master
-        with:
-          name: bridge-artifact
-          path: ./
-
       - name: Install flutter
         uses: subosito/flutter-action@v2
         with:
@@ -136,9 +130,107 @@ jobs:
           prefix-key: rustdesk-lib-cache-ios
           key: ${{ matrix.job.target }}
 
+      - name: Restore bridge files
+        uses: actions/download-artifact@master
+        with:
+          name: bridge-artifact
+          path: ./
+
+      - name: Verify vcpkg installation
+        run: |
+          echo "VCPKG_ROOT: ${{ env.VCPKG_ROOT }}"
+          echo "VCPKG_DEFAULT_TRIPLET: ${{ matrix.job.vcpkg-triplet }}"
+          echo "Checking vcpkg installation..."
+          ls -la ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/
+          ls -la ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/
+          echo "FFmpeg headers:"
+          find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/ -name "*.h" | grep -E "(avcodec|avutil|avformat)" | head -10
+
       - name: Build rustdesk lib
+        env:
+          VCPKG_ROOT: ${{ env.VCPKG_ROOT }}
+          VCPKG_DEFAULT_TRIPLET: ${{ matrix.job.vcpkg-triplet }}
+          PKG_CONFIG_PATH: ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/pkgconfig
+          CMAKE_PREFIX_PATH: ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}
+          CFLAGS: "-I${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
+          CPPFLAGS: "-I${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
+          LDFLAGS: "-L${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib"
+          PKG_CONFIG_ALLOW_CROSS: "1"
+          FFMPEG_DIR: ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}
+          FFMPEG_INCLUDE_DIR: ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include
+          FFMPEG_LIB_DIR: ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib
         run: |
           rustup target add ${{ matrix.job.target }}
+          # Set up environment for FFmpeg dependencies
+          export VCPKG_ROOT=${{ env.VCPKG_ROOT }}
+          export VCPKG_DEFAULT_TRIPLET=${{ matrix.job.vcpkg-triplet }}
+          export PKG_CONFIG_PATH=${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/pkgconfig
+          export CMAKE_PREFIX_PATH=${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}
+          export CFLAGS="-I${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
+          export CPPFLAGS="-I${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
+          export LDFLAGS="-L${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib"
+          export PKG_CONFIG_ALLOW_CROSS=1
+          
+          # Create .cargo/config.toml to help find FFmpeg
+          mkdir -p .cargo
+          cat > .cargo/config.toml << EOF
+          [target.aarch64-apple-ios]
+          linker = "clang"
+          rustflags = [
+            "-C", "link-arg=-L${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib",
+            "-C", "link-arg=-I${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
+          ]
+          
+          [env]
+          VCPKG_ROOT = "${{ env.VCPKG_ROOT }}"
+          VCPKG_DEFAULT_TRIPLET = "${{ matrix.job.vcpkg-triplet }}"
+          PKG_CONFIG_PATH = "${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/pkgconfig"
+          CMAKE_PREFIX_PATH = "${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}"
+          EOF
+          
+          # Verify FFmpeg installation
+          echo "Checking FFmpeg installation..."
+          ls -la ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/
+          ls -la ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/
+          
+          # Check pkg-config
+          echo "Checking pkg-config..."
+          pkg-config --list-all | grep -i ffmpeg || echo "No FFmpeg found in pkg-config"
+          
+          # Create a temporary build script for hwcodec if needed
+          echo "Creating temporary build configuration for hwcodec..."
+          mkdir -p .cargo
+          cat >> .cargo/config.toml << EOF
+          
+          [build]
+          target = "aarch64-apple-ios"
+          
+          [target.aarch64-apple-ios]
+          ar = "ar"
+          linker = "clang"
+          rustflags = [
+            "-C", "link-arg=-L${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib",
+            "-C", "link-arg=-I${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include",
+            "-C", "link-arg=-lavcodec",
+            "-C", "link-arg=-lavutil",
+            "-C", "link-arg=-lavformat",
+            "-C", "link-arg=-lswscale",
+            "-C", "link-arg=-lswresample"
+          ]
+          EOF
+          
+          # Create symlinks for FFmpeg headers
+          echo "Creating symlinks for FFmpeg headers..."
+          mkdir -p /tmp/ffmpeg-headers
+          ln -sf ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/* /tmp/ffmpeg-headers/
+          export C_INCLUDE_PATH="/tmp/ffmpeg-headers:${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
+          export CPP_INCLUDE_PATH="/tmp/ffmpeg-headers:${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
+          
+          # Set additional environment variables that hwcodec might need
+          export FFMPEG_DIR="${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}"
+          export FFMPEG_INCLUDE_DIR="${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
+          export FFMPEG_LIB_DIR="${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib"
+          
           cargo build --features flutter,hwcodec --release --target aarch64-apple-ios --lib
           
       - name: Upload liblibrustdesk.a Artifacts
