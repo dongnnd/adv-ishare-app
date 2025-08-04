@@ -13,6 +13,10 @@
       "platform": "android"
     },
     {
+      "name": "ffmpeg",
+      "host": false
+    },
+    {
       "name": "libjpeg-turbo",
       "host": true
     },

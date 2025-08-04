@@ -102,6 +102,7 @@ jobs:
 
       - name: Install vcpkg dependencies
         run: |
+          # Use manifest mode with FFmpeg in vcpkg.json
           if ! $VCPKG_ROOT/vcpkg \
             install \
             --triplet ${{ matrix.job.vcpkg-triplet }} \
@@ -118,13 +119,13 @@ jobs:
           head -n 100 "${VCPKG_ROOT}/buildtrees/ffmpeg/build-${{ matrix.job.vcpkg-triplet }}-rel-out.log" || true
         shell: bash
 
-      - name: Install FFmpeg explicitly for iOS
+      - name: Verify FFmpeg installation
         run: |
-          echo "Installing FFmpeg explicitly for iOS..."
-          $VCPKG_ROOT/vcpkg install ffmpeg --triplet ${{ matrix.job.vcpkg-triplet }} --x-install-root="$VCPKG_ROOT/installed"
-          echo "Checking FFmpeg installation:"
+          echo "Checking FFmpeg installation after vcpkg install..."
           find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/ -name "*av*" | head -10
           find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/ -name "*av*" | head -10
+          echo "All installed packages:"
+          ${{ env.VCPKG_ROOT }}/vcpkg list
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@v1
