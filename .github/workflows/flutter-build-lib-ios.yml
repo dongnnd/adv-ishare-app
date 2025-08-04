@@ -118,6 +118,14 @@ jobs:
           head -n 100 "${VCPKG_ROOT}/buildtrees/ffmpeg/build-${{ matrix.job.vcpkg-triplet }}-rel-out.log" || true
         shell: bash
 
+      - name: Install FFmpeg explicitly for iOS
+        run: |
+          echo "Installing FFmpeg explicitly for iOS..."
+          $VCPKG_ROOT/vcpkg install ffmpeg --triplet ${{ matrix.job.vcpkg-triplet }} --x-install-root="$VCPKG_ROOT/installed"
+          echo "Checking FFmpeg installation:"
+          find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/ -name "*av*" | head -10
+          find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/ -name "*av*" | head -10
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@v1
         with:
@@ -145,6 +153,10 @@ jobs:
           ls -la ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/
           echo "FFmpeg headers:"
           find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/ -name "*.h" | grep -E "(avcodec|avutil|avformat)" | head -10
+          echo "FFmpeg libraries:"
+          find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/ -name "*av*" | head -10
+          echo "All installed packages:"
+          ${{ env.VCPKG_ROOT }}/vcpkg list
 
       - name: Build rustdesk lib
         env:
@@ -171,23 +183,6 @@ jobs:
           export LDFLAGS="-L${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib"
           export PKG_CONFIG_ALLOW_CROSS=1
           
-          # Create .cargo/config.toml to help find FFmpeg
-          mkdir -p .cargo
-          cat > .cargo/config.toml << EOF
-          [target.aarch64-apple-ios]
-          linker = "clang"
-          rustflags = [
-            "-C", "link-arg=-L${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib",
-            "-C", "link-arg=-I${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
-          ]
-          
-          [env]
-          VCPKG_ROOT = "${{ env.VCPKG_ROOT }}"
-          VCPKG_DEFAULT_TRIPLET = "${{ matrix.job.vcpkg-triplet }}"
-          PKG_CONFIG_PATH = "${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/pkgconfig"
-          CMAKE_PREFIX_PATH = "${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}"
-          EOF
-          
           # Verify FFmpeg installation
           echo "Checking FFmpeg installation..."
           ls -la ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/
@@ -200,8 +195,7 @@ jobs:
           # Create a temporary build script for hwcodec if needed
           echo "Creating temporary build configuration for hwcodec..."
           mkdir -p .cargo
-          cat >> .cargo/config.toml << EOF
-          
+          cat > .cargo/config.toml << EOF
           [build]
           target = "aarch64-apple-ios"
           
@@ -217,6 +211,12 @@ jobs:
             "-C", "link-arg=-lswscale",
             "-C", "link-arg=-lswresample"
           ]
+          
+          [env]
+          VCPKG_ROOT = "${{ env.VCPKG_ROOT }}"
+          VCPKG_DEFAULT_TRIPLET = "${{ matrix.job.vcpkg-triplet }}"
+          PKG_CONFIG_PATH = "${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/pkgconfig"
+          CMAKE_PREFIX_PATH = "${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}"
           EOF
           
           # Create symlinks for FFmpeg headers
