@@ -51,7 +51,6 @@ jobs:
     if: ${{ inputs.upload-artifact }}
     name: build rustdesk ios ipa
     runs-on: ${{ matrix.job.os }}
-    needs: [generate-bridge]
     strategy:
       fail-fast: false
       matrix:
