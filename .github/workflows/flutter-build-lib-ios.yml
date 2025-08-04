@@ -4,9 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       upload-artifact:
+        description: "Whether to upload artifacts"
         type: boolean
         default: true
       upload-tag:
+        description: "Tag name for the release"
         type: string
         default: "nightly"
 
@@ -47,10 +49,14 @@ env:
   SIGN_BASE_URL: "${{ secrets.SIGN_BASE_URL }}"
 
 jobs:
+  generate-bridge:
+    uses: ./.github/workflows/bridge.yml
+
   build-rustdesk-ios:
     if: ${{ inputs.upload-artifact }}
     name: build rustdesk ios ipa
     runs-on: ${{ matrix.job.os }}
+    needs: [generate-bridge]
     strategy:
       fail-fast: false
       matrix:
@@ -74,6 +80,14 @@ jobs:
           brew install nasm yasm
       - name: Checkout source code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Restore bridge files
+        uses: actions/download-artifact@master
+        with:
+          name: bridge-artifact
+          path: ./
 
       - name: Install flutter
         uses: subosito/flutter-action@v2
@@ -116,6 +130,11 @@ jobs:
           toolchain: ${{ env.RUST_VERSION }}
           targets: ${{ matrix.job.target }}
           components: "rustfmt"
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: rustdesk-lib-cache-ios
+          key: ${{ matrix.job.target }}
 
       - name: Build rustdesk lib
         run: |
