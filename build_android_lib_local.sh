@@ -196,6 +196,10 @@ generate_bridge() {
     
     cp ./flutter/macos/Runner/bridge_generated.h ./flutter/ios/Runner/bridge_generated.h
     
+    # Fix typedef redefinition issue in bridge_generated.h
+    sed -i '' 's/typedef uintptr_t Dart_Handle;/\/\/ typedef uintptr_t Dart_Handle; \/\/ Removed duplicate definition/' ./flutter/macos/Runner/bridge_generated.h
+    sed -i '' 's/typedef uintptr_t Dart_Handle;/\/\/ typedef uintptr_t Dart_Handle; \/\/ Removed duplicate definition/' ./flutter/ios/Runner/bridge_generated.h
+    
     print_status "Bridge generation completed"
 }
 

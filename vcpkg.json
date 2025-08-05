@@ -20,10 +20,7 @@
       "name": "libjpeg-turbo",
       "host": false
     },
-    {
-      "name": "oboe",
-      "platform": "android"
-    },
+
     {
       "name": "opus",
       "host": true
@@ -50,7 +47,7 @@
     },
     {
       "name": "mfx-dispatch",
-      "host": true,
+      "host": false,
       "platform": "((x86 | x64) & (android | linux)) | (windows & !uwp)"
     },
     {

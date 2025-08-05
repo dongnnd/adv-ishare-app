@@ -74,6 +74,11 @@ function build {
 if [ -d "$VCPKG_ROOT/installed/arm-neon-android" ]; then
   echo "*** [Start] Move arm-neon-android to arm-android"
 
+  # Remove existing arm-android directory if it exists
+  if [ -d "$VCPKG_ROOT/installed/arm-android" ]; then
+    rm -rf "$VCPKG_ROOT/installed/arm-android"
+  fi
+
   mv "$VCPKG_ROOT/installed/arm-neon-android" "$VCPKG_ROOT/installed/arm-android"
 
   echo "*** [Finished] Move arm-neon-android to arm-android"
