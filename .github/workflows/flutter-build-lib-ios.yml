@@ -102,30 +102,8 @@ jobs:
 
       - name: Install vcpkg dependencies
         run: |
-          # Use manifest mode with FFmpeg in vcpkg.json
-          if ! $VCPKG_ROOT/vcpkg \
-            install \
-            --triplet ${{ matrix.job.vcpkg-triplet }} \
-            --x-install-root="$VCPKG_ROOT/installed"; then
-            find "${VCPKG_ROOT}/" -name "*.log" | while read -r _1; do
-              echo "$_1:"
-              echo "======"
-              cat "$_1"
-              echo "======"
-              echo ""
-            done
-            exit 1
-          fi
-          head -n 100 "${VCPKG_ROOT}/buildtrees/ffmpeg/build-${{ matrix.job.vcpkg-triplet }}-rel-out.log" || true
+          $VCPKG_ROOT/vcpkg install --triplet ${{ matrix.job.vcpkg-triplet }} --x-install-root="$VCPKG_ROOT/installed"
         shell: bash
-
-      - name: Verify FFmpeg installation
-        run: |
-          echo "Checking FFmpeg installation after vcpkg install..."
-          find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/ -name "*av*" | head -10
-          find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/ -name "*av*" | head -10
-          echo "All installed packages:"
-          ${{ env.VCPKG_ROOT }}/vcpkg list
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@v1
@@ -145,56 +123,9 @@ jobs:
           name: bridge-artifact
           path: ./
 
-      - name: Verify vcpkg installation
-        run: |
-          echo "VCPKG_ROOT: ${{ env.VCPKG_ROOT }}"
-          echo "VCPKG_DEFAULT_TRIPLET: ${{ matrix.job.vcpkg-triplet }}"
-          echo "Checking vcpkg installation..."
-          ls -la ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/
-          ls -la ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/
-          echo "FFmpeg headers:"
-          find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/ -name "*.h" | grep -E "(avcodec|avutil|avformat)" | head -10
-          echo "FFmpeg libraries:"
-          find ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/ -name "*av*" | head -10
-          echo "All installed packages:"
-          ${{ env.VCPKG_ROOT }}/vcpkg list
-
       - name: Build rustdesk lib
-        env:
-          VCPKG_ROOT: ${{ env.VCPKG_ROOT }}
-          VCPKG_DEFAULT_TRIPLET: ${{ matrix.job.vcpkg-triplet }}
-          PKG_CONFIG_PATH: ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/pkgconfig
-          CMAKE_PREFIX_PATH: ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}
-          FFMPEG_DIR: ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}
-          FFMPEG_INCLUDE_DIR: ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include
-          FFMPEG_LIB_DIR: ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib
         run: |
           rustup target add ${{ matrix.job.target }}
-          # Set up environment for FFmpeg dependencies
-          export VCPKG_ROOT=${{ env.VCPKG_ROOT }}
-          export VCPKG_DEFAULT_TRIPLET=${{ matrix.job.vcpkg-triplet }}
-          export PKG_CONFIG_PATH=${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/pkgconfig
-          export CMAKE_PREFIX_PATH=${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}
-          export CFLAGS="-I${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
-          export CPPFLAGS="-I${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include"
-          export LDFLAGS="-L${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib"
-          export PKG_CONFIG_ALLOW_CROSS=1
-          
-          # Verify FFmpeg installation
-          echo "Checking FFmpeg installation..."
-          ls -la ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/include/
-          ls -la ${{ env.VCPKG_ROOT }}/installed/${{ matrix.job.vcpkg-triplet }}/lib/
-          
-          # Check pkg-config
-          echo "Checking pkg-config..."
-          pkg-config --list-all | grep -i ffmpeg || echo "No FFmpeg found in pkg-config"
-          
-          # Verify target and environment
-          echo "Current target: ${{ matrix.job.target }}"
-          echo "Current triplet: ${{ matrix.job.vcpkg-triplet }}"
-          rustup target list | grep installed
-          
-          # Build exactly like the original workflow
           cargo build --features flutter,hwcodec --release --target aarch64-apple-ios --lib
           
       - name: Upload liblibrustdesk.a Artifacts
@@ -202,19 +133,3 @@ jobs:
         with:
           name: liblibrustdesk.a
           path: target/aarch64-apple-ios/release/liblibrustdesk.a
-
-      # - name: Upload Artifacts
-      #   # if: env.ANDROID_SIGNING_KEY != null && env.UPLOAD_ARTIFACT == 'true'
-      #   uses: actions/upload-artifact@master
-      #   with:
-      #     name: rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.apk
-      #     path: flutter/build/ios/ipa/*.ipa
-
-      # - name: Publish ipa package
-      #   # if: env.ANDROID_SIGNING_KEY != null && env.UPLOAD_ARTIFACT == 'true'
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     prerelease: true
-      #     tag_name: ${{ env.TAG_NAME }}
-      #     files: |
-      #       flutter/build/ios/ipa/*.ipa
