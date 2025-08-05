@@ -303,15 +303,31 @@ fn main() {
     // ffmpeg();
     let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap();
     if target_os == "ios" {
-        let ffmpeg_root = std::env::var("CARGO_MANIFEST_DIR").unwrap();
-        let ffmpeg_root = std::path::Path::new(&ffmpeg_root).join("../../third_party/ffmpeg-ios-arm64");
-        let ffmpeg_include = ffmpeg_root.join("include");
-        let ffmpeg_lib = ffmpeg_root.join("lib");
-        println!("cargo:rustc-link-search=native={}", ffmpeg_lib.display());
-        for lib in &["avcodec", "avformat", "avutil", "swscale", "swresample"] {
-            println!("cargo:rustc-link-lib=static={}", lib);
+        // Use vcpkg for FFmpeg instead of third_party directory
+        if let Ok(vcpkg_root) = std::env::var("VCPKG_ROOT") {
+            let mut path = std::path::PathBuf::from(vcpkg_root);
+            path.push("installed");
+            path.push("arm64-ios");
+            let ffmpeg_lib = path.join("lib");
+            let ffmpeg_include = path.join("include");
+            
+            println!("cargo:rustc-link-search=native={}", ffmpeg_lib.display());
+            for lib in &["avcodec", "avformat", "avutil", "swscale", "swresample"] {
+                println!("cargo:rustc-link-lib=static={}", lib);
+            }
+            println!("cargo:include={}", ffmpeg_include.display());
+        } else {
+            // Fallback to third_party directory
+            let ffmpeg_root = std::env::var("CARGO_MANIFEST_DIR").unwrap();
+            let ffmpeg_root = std::path::Path::new(&ffmpeg_root).join("../../third_party/ffmpeg-ios-arm64");
+            let ffmpeg_include = ffmpeg_root.join("include");
+            let ffmpeg_lib = ffmpeg_root.join("lib");
+            println!("cargo:rustc-link-search=native={}", ffmpeg_lib.display());
+            for lib in &["avcodec", "avformat", "avutil", "swscale", "swresample"] {
+                println!("cargo:rustc-link-lib=static={}", lib);
+            }
+            println!("cargo:include={}", ffmpeg_include.display());
         }
-        println!("cargo:include={}", ffmpeg_include.display());
         // Các framework cần thiết cho iOS
         println!("cargo:rustc-link-lib=framework=CoreFoundation");
         println!("cargo:rustc-link-lib=framework=CoreVideo");
