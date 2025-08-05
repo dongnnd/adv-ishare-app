@@ -66,7 +66,7 @@ set(OPTIONS "\
 --enable-avcodec \
 --enable-avformat \
 --disable-avfilter \
---disable-swresample \
+--enable-swresample \
 --enable-swscale \
 --disable-postproc \
 --enable-decoder=h264 \
