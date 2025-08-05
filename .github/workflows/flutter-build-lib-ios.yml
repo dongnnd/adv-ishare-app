@@ -116,7 +116,21 @@ jobs:
             exit 1
           fi
           head -n 100 "${VCPKG_ROOT}/buildtrees/ffmpeg/build-${{ matrix.job.vcpkg-triplet }}-rel-out.log" || true
-        shell: bash
+
+      - name: Debug FFmpeg installation
+        run: |
+          echo "=== Checking VCPKG_ROOT ==="
+          echo "VCPKG_ROOT: $VCPKG_ROOT"
+          echo "=== Checking installed directory ==="
+          ls -la "$VCPKG_ROOT/installed/" || echo "installed directory not found"
+          echo "=== Checking arm64-ios directory ==="
+          ls -la "$VCPKG_ROOT/installed/arm64-ios/" || echo "arm64-ios directory not found"
+          echo "=== Checking lib directory ==="
+          ls -la "$VCPKG_ROOT/installed/arm64-ios/lib/" || echo "lib directory not found"
+          echo "=== Checking for swscale ==="
+          find "$VCPKG_ROOT/installed/" -name "*swscale*" 2>/dev/null || echo "No swscale files found"
+          echo "=== Checking pkg-config ==="
+          find "$VCPKG_ROOT/installed/" -name "*.pc" | grep -i ffmpeg || echo "No FFmpeg .pc files found"
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@v1
