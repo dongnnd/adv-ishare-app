@@ -65,6 +65,7 @@ set(OPTIONS "\
 --disable-avdevice \
 --enable-avcodec \
 --enable-avformat \
+--enable-avutil \
 --disable-avfilter \
 --enable-swresample \
 --enable-swscale \
