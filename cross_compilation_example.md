@@ -193,8 +193,8 @@ src/
 
 # Multiple target libraries
 android-libs/
-├── liblibrustdesk-aarch64.so   # ARM64 devices (85% market)
-├── liblibrustdesk-armv7.so     # ARM32 devices (12% market)
+├── librustdesk.so   # ARM64 devices (85% market)
+├── librustdesk.so     # ARM32 devices (12% market)
 └── liblibrustdesk-x86_64.so    # Emulators (3% market)
 ```
 

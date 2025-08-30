@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Netcontrol Ishare</string>
-    <string name="accessibility_service_description">Allow other devices to control your phone using virtual touch, when RustDesk screen sharing is established</string>
+    <string name="accessibility_service_description">Cho phép thiết bị khác điều khiển điện thoại của bạn từ xa bằng thao tác chạm trên màn hình khi đã bật chia sẻ màn hình Netcontrol IShare.</string>
 </resources>

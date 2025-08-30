@@ -1,6 +1,6 @@
-<?xml version=”1.0" encoding=”UTF-8"?>
- <!DOCTYPE plist PUBLIC “-//Apple//DTD PLIST 1.0//EN” “http://www.apple.com/DTDs/PropertyList-1.0.dtd">
- <plist version=”1.0">
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ <plist version="1.0">
  <dict>
  <key>method</key>
  <string>app-store</string>
@@ -8,8 +8,16 @@
  <string>HZF9JMC8YN</string>
  <key>provisioningProfiles</key>
  <dict>
- <key>com.carriez.flutterHbb</key>
+ <key>led.control.ishare</key>
  <string>rustdesk-ios-prod-app-store</string>
  </dict>
+ <key>uploadBitcode</key>
+ <false/>
+ <key>uploadSymbols</key>
+ <true/>
+ <key>compileBitcode</key>
+ <false/>
+ <key>thinning</key>
+ <string>&lt;none&gt;</string>
  </dict>
  </plist>

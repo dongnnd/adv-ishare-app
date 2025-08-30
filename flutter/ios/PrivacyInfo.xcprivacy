@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>NSPrivacyCollectedDataTypes</key>
+  <array>
+    <!-- device_info_plus -->
+    <dict>
+      <key>NSPrivacyCollectedDataType</key>
+      <string>Device ID</string>
+      <key>NSPrivacyCollectedDataUse</key>
+      <string>App Functionality</string>
+      <key>NSPrivacyCollectedDataLinked</key>
+      <true/>
+      <key>NSPrivacyCollectedDataTracking</key>
+      <false/>
+    </dict>
+
+    <!-- file_picker -->
+    <dict>
+      <key>NSPrivacyCollectedDataType</key>
+      <string>Other Files</string>
+      <key>NSPrivacyCollectedDataUse</key>
+      <string>User-Selected Files</string>
+      <key>NSPrivacyCollectedDataLinked</key>
+      <false/>
+      <key>NSPrivacyCollectedDataTracking</key>
+      <false/>
+    </dict>
+  </array>
+
+  <!-- Khai báo riêng cho từng SDK còn lại, mặc dù không thu thập dữ liệu -->
+  <key>NSPrivacyTrackingDomains</key>
+  <array/>
+  <key>NSPrivacyAccessedAPITypes</key>
+  <array>
+    <!-- package_info_plus -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>System Boot Time</string>
+      <key>NSPrivacyAccessedAPITypeReason</key>
+      <string>Retrieve application version and build number</string>
+    </dict>
+
+    <!-- sqflite -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>Local Storage</string>
+      <key>NSPrivacyAccessedAPITypeReason</key>
+      <string>Store application data locally on device</string>
+    </dict>
+
+    <!-- wakelock_plus -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>Device Power Management</string>
+      <key>NSPrivacyAccessedAPITypeReason</key>
+      <string>Keep screen awake while app is running</string>
+    </dict>
+  </array>
+</dict>
+</plist>

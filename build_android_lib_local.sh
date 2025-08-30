@@ -13,7 +13,7 @@ export FLUTTER_VERSION="3.24.5"
 export ANDROID_FLUTTER_VERSION="3.24.5"
 export VCPKG_COMMIT_ID="6f29f12e82a8293156836ad81cc9bf5af41fe836"
 export VERSION="1.4.1"
-export NDK_VERSION="r27c"
+export NDK_VERSION="r28"
 
 # Colors for output
 RED='\033[0;31m'
@@ -98,18 +98,18 @@ setup_android_ndk() {
     print_step "Setting up Android NDK..."
     
     local ndk_dir="$HOME/Library/Android/sdk/ndk"
-    local ndk_path="$ndk_dir/$NDK_VERSION"
+    local ndk_path="$ndk_dir/28.0.13004108"  # Sử dụng version number thực tế
     
     if [ ! -d "$ndk_path" ]; then
         print_warning "Android NDK $NDK_VERSION not found. Downloading..."
         mkdir -p "$ndk_dir"
         cd "$ndk_dir"
         
-        # Download NDK
+        # Download NDK r28
         local ndk_url="https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-darwin.zip"
         wget -O "android-ndk-${NDK_VERSION}-darwin.zip" "$ndk_url"
         unzip "android-ndk-${NDK_VERSION}-darwin.zip"
-        mv "android-ndk-${NDK_VERSION}" "$NDK_VERSION"
+        mv "android-ndk-${NDK_VERSION}" "28.0.13004108"  # Đổi tên thành version number
         rm "android-ndk-${NDK_VERSION}-darwin.zip"
         cd - > /dev/null
     fi
@@ -249,6 +249,10 @@ build_lib() {
     
     # Add target
     rustup target add "$target"
+
+    # Set RUSTFLAGS for 16KB page size support
+    export RUSTFLAGS="-C link-arg=-Wl,-z,max-page-size=16384"
+    print_status "Using RUSTFLAGS: $RUSTFLAGS"
     
     # Build
     case $target in
@@ -276,9 +280,61 @@ build_lib() {
         print_status "Successfully built: $lib_path"
         ls -lh "$lib_path"
         file "$lib_path"
+        
+        # Copy libc++_shared.so from NDK r28 for better 16KB page size support
+        copy_ndk_libraries "$target" "$android_abi"
     else
         print_error "Failed to build library for $target"
         exit 1
+    fi
+}
+
+# Function to copy NDK libraries to Flutter project
+copy_ndk_libraries() {
+    local target=$1
+    local android_abi=$2
+    
+    print_step "Copying NDK libraries for $android_abi..."
+    
+    # Map target to NDK architecture directory
+    local ndk_arch_dir
+    case $target in
+        "aarch64-linux-android")
+            ndk_arch_dir="aarch64-linux-android"
+            ;;
+        "armv7-linux-androideabi")
+            ndk_arch_dir="arm-linux-androideabi"
+            ;;
+        "x86_64-linux-android")
+            ndk_arch_dir="x86_64-linux-android"
+            ;;
+        "i686-linux-android")
+            ndk_arch_dir="i686-linux-android"
+            ;;
+        *)
+            print_warning "Unknown target for NDK library copy: $target"
+            return
+            ;;
+    esac
+    
+    # Source and destination paths
+    local ndk_lib_path="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/$ndk_arch_dir/libc++_shared.so"
+    local flutter_lib_dir="./flutter/android/app/src/main/jniLibs/$android_abi"
+    local flutter_lib_path="$flutter_lib_dir/libc++_shared.so"
+    
+    # Create directory if it doesn't exist
+    mkdir -p "$flutter_lib_dir"
+    
+    # Copy libc++_shared.so from NDK r28
+    if [ -f "$ndk_lib_path" ]; then
+        cp "$ndk_lib_path" "$flutter_lib_path"
+        print_status "Copied libc++_shared.so from NDK r28 to $flutter_lib_path"
+        
+        # Check page size of the copied library
+        echo "Page size info:"
+        objdump -p "$flutter_lib_path" 2>/dev/null | grep "align" | head -2 | sed 's/^/  /'
+    else
+        print_warning "NDK library not found: $ndk_lib_path"
     fi
 }
 

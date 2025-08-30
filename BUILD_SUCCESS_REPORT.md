@@ -135,8 +135,8 @@ flutter/android/app/src/main/jniLibs/
 
 1. **Copy libraries to Flutter:**
    ```bash
-   cp android-libs/liblibrustdesk-aarch64.so flutter/android/app/src/main/jniLibs/arm64-v8a/librustdesk.so
-   cp android-libs/liblibrustdesk-armv7.so flutter/android/app/src/main/jniLibs/armeabi-v7a/librustdesk.so
+   cp android-libs/librustdesk.so flutter/android/app/src/main/jniLibs/arm64-v8a/librustdesk.so
+   cp android-libs/librustdesk.so flutter/android/app/src/main/jniLibs/armeabi-v7a/librustdesk.so
    cp android-libs/liblibrustdesk-x86_64.so flutter/android/app/src/main/jniLibs/x86_64/librustdesk.so
    ```
 
