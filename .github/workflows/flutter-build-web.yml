@@ -65,7 +65,7 @@ jobs:
 
 
   build-rustdesk-web:
-    if: False
+    if: true
     name: build-rustdesk-web
     runs-on: ubuntu-22.04
     permissions:
